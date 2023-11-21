@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test with Js</title>
+</head>
+<style>
+    #test {
+        background-color: rgb(156, 197, 197);
+        margin: 50px 50px;
+        padding: 30px 20px;
+        border: 3.5px solid green;
+        border-radius: 20px;
+        width: 5 00px;
+    }
+    #time {
+        font-size: 20px;
+    }
+    h1{
+        color: green;
+    }
+    #quest {
+        color: green;
+        font-size: 25px;
+    }
+    #ans {
+        font-size: 20px;
+    }
+    button {
+        /* display: */
+        width: 85px;
+        height: 40px;
+        background-color: green;
+        border: none;
+        border-radius: 15px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div id="test">
+    <div id="time"></div>
+    <h1 id="h1"></h1>
+    <div id="quest"></div>
+    <div id="ans"></div>
+    <button id="bk" onclick="Back()">Back</button>
+    <button id="nxt" onclick="Next()">Next</button>
+    </div>
+</body>
+
+<script>
+    const Quest = document.getElementById("quest");
+    const Ans = document.getElementById("ans");
+    const H1 = document.getElementById("h1");
+    const testTime = document.getElementById("time");
+    const Bak = document.getElementById("bk");
+    const Nxt = document.getElementById("nxt");
+
+    let questions = [
+        { question : "What is my Name?",
+          option: [" Dan", " John", " Tim", " Thomas"," Sherwood"],
+          answer: " Tim"},
+
+          { question : "Who is the President of America?",
+          option: [" Dan", " Biden", " Tim", " Thomas"," Sherwood"],
+          answer: " Biden"},
+
+          { question : "Who is the President of Nigeria?",
+          option: [" Dan", " Biden", " Tim", " Tinubu"," Sherwood"],
+          answer: " Tinubu"},
+
+          { question : "Who is the President of Ghana?",
+          option: [" Akuffo", " Biden", " Tim", " Thomas"," Sherwood"],
+          answer: " Akuffo"},
+
+          { question : "Who is the President of Russian?",
+          option: [" Dan", " Biden", " Tim", " Thomas"," Putin"],
+          answer: " Putin"},
+
+          { question : "Who is the President of France?",
+          option: [" Dan", " Biden", " Tim", " Macron"," Putin"],
+          answer: " Macron"},
+    ]
+
+    let Index = 0;
+    let Score = 0;
+    let time = 60;
+    let lastIndex = questions.length-1;
+    let selectedOptions = Array(questions.length).fill(null);
+    let answeredCorrectly = Array(questions.length).fill(false);
+    Bak.style.display = "none";
+    
+    const UpdateQuestion = () => {
+        if (Index < questions.length) {
+        H1.innerHTML = ` Welcome to My Computer Based Test <br/> <br /> Question ${ [Index + 1] }`
+        Quest.innerHTML = ` <br /> ${questions[Index].question} <br /> <br />`;
+        Ans.innerHTML = `<br /> ${questions[Index].option.map((option, i) => `<input type="radio" name="answer" value="${option}" ${selectedOptions[Index] === i ? 'checked' : ''}> ${option}`).join('')} <br /><br />`;
+    } else {
+        Result();
+    }}
+    UpdateQuestion();
+ 
+    const Result = () => {
+        Quest.style.display = "none";
+        Ans.style.display = "none";
+        clearInterval(TimeUp)
+        testTime.style.display = "none";
+        Bak.style.display = "none";
+        Nxt.style.display = "none";
+        H1.innerHTML = `You got ${Score} questions correct out of ${questions.length} questions`;
+        
+    }
+  
+    const getSelectedOption = () => {
+        const selectedOption = document.querySelector('input[name="answer"]:checked');
+        if (selectedOption) {
+            const selectedValue = selectedOption.value;
+            const selectedOptionIndex = questions[Index].option.indexOf(selectedValue);
+            selectedOptions[Index] = selectedOptionIndex; 
+            if (selectedValue === questions[Index].answer && !answeredCorrectly[Index]) {
+                Score++;
+                answeredCorrectly[Index] = true;
+                //console.log(Score);
+            } else if (Index === 0 && selectedValue !== questions[Index].answer) {
+                Score = 0;
+                //console.log(Score);
+            } 
+            Index++;
+        } else {
+            alert("Select an Option");
+        }
+    }
+
+   const Next = () => {
+    if (Index < questions.length) {
+        getSelectedOption();
+        Bak.style.display = "inline";
+        if ( Index === lastIndex ) {
+              Nxt.innerHTML = "Submit";
+         }
+        UpdateQuestion(); 
+    } }
+
+    const Back = () => {
+    if (Index > 0) { 
+        --Index;
+        if (Index != lastIndex) {
+              Nxt.innerHTML = "Next";
+         }
+        UpdateQuestion();
+        if (Index === 0) {
+            Bak.style.display = "none";
+        }
+    }}
+
+    let TimeUp = setInterval(() => {
+        if (time === 0) {
+            testTime.innerHTML = "Your Time is Up!!!";
+            clearInterval(TimeUp);
+            getSelectedOption();
+            Result();
+            if (time < 10 ) {
+                testTime.style.color = "red";
+             }
+        } else if (time < 10) {
+            testTime.style.color = "red";
+            testTime.innerHTML = `You have ${time} seconds left`;
+            time--;
+
+        } else {
+            testTime.innerHTML = `You have ${time} seconds left`;
+            time--;
+        }
+    }, 1000)
+</script>
+</html>
